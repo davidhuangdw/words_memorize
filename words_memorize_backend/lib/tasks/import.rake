@@ -1,6 +1,9 @@
 require 'csv'
 
 namespace :import do
+
+  # refers to:  https://github.com/skywind3000/ECDICT/blob/master/ecdict.csv
+  # totally 770k words
   desc 'read ecdict CSV file'
   task :from_ecdict_csv, [:file_name] => :environment do |t, args|
     puts "---- reading #{args.file_name}"
