@@ -14,19 +14,19 @@ class WordFreqTrie
       self.frequency = 0
     end
 
-    def search_most_frequents(result_que:, path: [], least_freq: top_k_least)
-      if max >= least_freq
-        if complete and frequency >= least_freq
-          result_que.push([path.join, Word.freq_rank(frequency)])
+    def search_most_frequents(result_que:, path: [], context: {least_freq: top_k_least})
+      if max >= context[:least_freq]
+        if complete and frequency >= context[:least_freq]
+          result_que.push([path.join, frequency])
           if result_que.size > TOP_K
             result_que.pop
-            least_freq = result_que.peek[1]
+            context[:least_freq] = result_que.peek[1]   # wrap :least_freq inside 'context' to update it
           end
         end
 
         nxt.each do |ch, child_node|
           path.push(ch)
-          child_node.search_most_frequents(result_que: result_que, path: path, least_freq: least_freq)
+          child_node.search_most_frequents(result_que: result_que, path: path, context: context)
           path.pop
         end
       end
@@ -72,11 +72,11 @@ class WordFreqTrie
 
   def top_k(prefix, allowed_errors=0)
     node_path_pairs = root.search_reachable(0, prefix, allowed_errors.to_i)
-    # p node_path_pairs.size
-    # p node_path_pairs.values.map(&:join)
+    puts "----reachable nodes: #{node_path_pairs.size}"
+    # p node_path_pairs.values.map(&:join).sort
 
     que = PriorityQueue.new{|word_freq_pair| word_freq_pair[1]}
     node_path_pairs.each{|node, path| node.search_most_frequents(result_que: que, path: path) }
-    que.to_a.sort_by{|word_freq_pair| word_freq_pair[1]}.to_h
+    que.to_a.sort_by{|word_freq_pair| Word.freq_rank(word_freq_pair[1])}.to_h
   end
 end

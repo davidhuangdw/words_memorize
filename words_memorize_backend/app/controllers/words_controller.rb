@@ -6,7 +6,7 @@ class WordsController < ApplicationController
     require_params!(:ids)
 
     word_ids = params[:ids].split(',')
-    words = Word.in(id: word_ids).desc(:frequency)
+    words = Word.in(id: word_ids)
     render json: WordPresenter.from_array(words)
   end
 
@@ -15,26 +15,32 @@ class WordsController < ApplicationController
     render json: WordPresenter.new(word)
   end
 
-  # support params: :allowed_errors, :full_present
+  # optional params: :full_present, :error_ratio, :allowed_errors
   def recommend
     require_params!(:prefix)
     prefix = params[:prefix]
-    allowed_errors = params[:allowed_errors] || 0
-    full_present = params[:full_present].present?
+    allowed_errors = (params[:allowed_errors] || (params[:error_ratio] && error_ratio_params*params[:prefix].size) || 0).to_i
 
     top_k = FREQ_TRIE_SINGLETON.top_k(prefix, allowed_errors)
-    unless top_k.include?(prefix)
+
+    if params[:full_present].present?
+      word_ids = top_k.keys.push(prefix)
+      top_k = Word.in(id: word_ids).map{|w| [w.id, WordPresenter.new(w)]}.to_h
+    elsif !top_k.include?(prefix)             # in case that the prefix is a rare word
       word = Word.only(:id, :frequency).find(prefix) rescue nil
       top_k[word.id] = word.freq_rank if word
     end
 
-    if full_present
-      word_ids = top_k.keys
-      top_k = Word.in(id: word_ids).desc(:frequency)
-                  .map{|w| [w.id, WordPresenter.new(w)]}.to_h
-    end
-
     render json: top_k
+  end
+
+  private
+
+  def error_ratio_params
+    if(ratio = params[:error_ratio])
+      ratio = ratio.to_f
+      ratio > 1 ? 1/ratio : ratio
+    end
   end
 
 end

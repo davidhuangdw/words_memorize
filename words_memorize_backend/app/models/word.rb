@@ -7,7 +7,6 @@ class Word
   field :bnc, type: Float
   field :frq, type: Float
   field :frequency, type: Float # the higher the more frequent, range 0...(2*SCORE_CAP)
-
   # field :collins, type: Boolean
   # field :oxford, type: Boolean
   # field :tag, type: Array
@@ -15,6 +14,11 @@ class Word
   # field :detail, type: String
 
   field :_id, type: String, default: ->{ name }
+
+
+  scope :frequent, ->{ where(:frequency.gt => 0) }
+  default_scope ->{ desc(:frequency) }
+
 
   SCORE_CAP = 100_000
 
