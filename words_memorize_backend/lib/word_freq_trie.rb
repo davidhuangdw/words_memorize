@@ -35,7 +35,7 @@ class WordFreqTrie
 
     def search_reachable(i, prefix, allowed_errors = 0, path: [], result: {}, visited: Set.new)
       return result if visited.include?([self, i])
-      visited.add([self, i])
+      visited.add([self, i])    # todo: eliminate redundancy further
 
       if prefix.size - i <= allowed_errors
         result[self] = path.clone unless result.include?(self)
