@@ -6,7 +6,9 @@
           class="input-prefix"
           label="Search"
           v-model="prefix"
-          @keyup="autoRecommend"
+          @input="autoRecommend"
+          @keydown.enter="selectInput"
+          @keydown.esc="clearInput"
         ></v-text-field>
       </v-flex>
     </v-layout>
@@ -24,18 +26,9 @@
         </v-list>
       </v-flex>
 
-      <v-flex sm9 class="word-definition pa-3">
+      <v-flex sm9 class="px-4">
         <div v-if="selectedWord">
-          <h1>{{ selectedWord.id }} [{{ selectedWord.phonetic }}]</h1>
-
-          <v-divider></v-divider>
-          <p v-html="splitLines(selectedWord.definition)" />
-
-          <v-divider></v-divider>
-          <p v-html="splitLines(selectedWord.translation)" />
-
-          <v-divider></v-divider>
-          {{ selectedWord.freq_rank }}
+          <word-definition :word="selectedWord"></word-definition>
         </div>
       </v-flex>
     </v-layout>
@@ -44,10 +37,14 @@
 
 <script>
 /* eslint-disable no-console */
+import WordDefinition from "@/components/WordDefinition.vue";
 import axios from "axios";
 
 export default {
   name: "dictionary",
+  components: {
+    WordDefinition,
+  },
   data: () => ({
     prefix: "",
     recommended: {},
@@ -64,6 +61,15 @@ export default {
   methods: {
     select(wordId) {
       this.selected = wordId;
+    },
+    clearInput() {
+      this.prefix = "";
+      this.autoRecommend();
+    },
+    selectInput() {
+      if (this.recommended[this.prefix]) {
+        this.selected = this.prefix;
+      }
     },
     resetRecommended(recommended) {
       this.recommended = recommended;
@@ -83,12 +89,7 @@ export default {
           this.resetRecommended(payload.data);
         });
     },
-    splitLines(str) {
-      return str
-        .split("\\n")
-        .map(line => `<p>${line}</p>`)
-        .join("");
-    }
+
   }
 };
 </script>
@@ -103,7 +104,5 @@ export default {
   overflow: scroll;
 }
 
-.word-definition {
-  text-align: left;
-}
+
 </style>
