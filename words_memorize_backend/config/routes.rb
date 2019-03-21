@@ -5,4 +5,10 @@ Rails.application.routes.draw do
       get 'recommend'
     end
   end
+
+  resources :memos do
+    collection do
+      post 'add_test'
+    end
+  end
 end

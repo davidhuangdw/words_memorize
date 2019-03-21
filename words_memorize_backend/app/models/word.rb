@@ -15,6 +15,7 @@ class Word
 
   field :_id, type: String, default: ->{ name }
 
+  has_many :memos
 
   scope :frequent, ->{ where(:frequency.gt => 0) }
   default_scope ->{ desc(:frequency) }
