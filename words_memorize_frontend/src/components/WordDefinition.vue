@@ -5,30 +5,29 @@
       <span class="grey--text text--lighten-1"> [{{ word.phonetic }}] </span>
     </div>
 
-    <memo-state :word_id="word.id"></memo-state>
+    <slot></slot>
 
-    <br/>
-    <div class="en-definition" v-html="splitLines(word.definition)" />
+    <br />
+    <div v-show="!hide_def">
+      <div class="en-definition" v-html="splitLines(word.definition)" />
 
-    <v-divider></v-divider>
-    <div v-html="splitLines(word.translation)" />
+      <v-divider></v-divider>
+      <div v-html="splitLines(word.translation)" />
 
-    <v-divider></v-divider>
-    Freq Rank: {{ word.freq_rank }}
+      <v-divider></v-divider>
+      Freq Rank: {{ word.freq_rank }}
+    </div>
   </div>
 </template>
 
 <script>
-import MemoState from "./MemoState";
 import { splitLines } from "../utils";
 
 export default {
   name: "WordDefinition",
-  components: {
-    MemoState
-  },
   props: {
     word: Object,
+    hide_def: Boolean
   },
   methods: {
     splitLines

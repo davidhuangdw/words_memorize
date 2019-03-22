@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "./views/Home.vue";
+import Dictionary from "./components/Dictionary";
+import Memorize from "./components/Memorize";
 
 Vue.use(Router);
 
@@ -10,17 +11,16 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "home",
-      component: Home
+      name: "dictionary",
+      component: Dictionary
     },
     {
-      path: "/about",
-      name: "about",
+      path: "/memo",
+      name: "memo",
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () =>
-        import(/* webpackChunkName: "about" */ "./views/About.vue")
+      component: Memorize
     }
   ]
 });

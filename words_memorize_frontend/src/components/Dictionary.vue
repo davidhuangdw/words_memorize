@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="dictionary">
     <v-layout justify-center>
       <v-flex sm6>
         <v-text-field
@@ -28,7 +28,9 @@
 
       <v-flex sm9 class="px-4">
         <div v-if="selectedWord">
-          <word-definition :word="selectedWord"></word-definition>
+          <word-definition :word="selectedWord">
+            <memo-state :word_id="selected"></memo-state>
+          </word-definition>
         </div>
       </v-flex>
     </v-layout>
@@ -37,13 +39,16 @@
 
 <script>
 /* eslint-disable no-console */
-import WordDefinition from "@/components/WordDefinition.vue";
 import axios from "axios";
+import WordDefinition from "./WordDefinition.vue";
+import MemoState from "./MemoState";
+import { default_error_strategy } from "../utils/";
 
 export default {
   name: "dictionary",
   components: {
     WordDefinition,
+    MemoState
   },
   data: () => ({
     prefix: "",
@@ -77,19 +82,19 @@ export default {
     },
     autoRecommend() {
       const prefix = this.prefix;
+      const allowed_errors = default_error_strategy(prefix.length);
       if (prefix.length < 2) {
         this.resetRecommended({});
         return;
       }
       axios
         .get("/words/recommend", {
-          params: { prefix: this.prefix, full_present: true, allowed_errors: 1 }
+          params: { prefix, allowed_errors, full_present: true }
         })
         .then(payload => {
           this.resetRecommended(payload.data);
         });
-    },
-
+    }
   }
 };
 </script>
@@ -103,6 +108,4 @@ export default {
   height: 600px;
   overflow: scroll;
 }
-
-
 </style>

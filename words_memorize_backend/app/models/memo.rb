@@ -35,8 +35,12 @@ class Memo
     "0"*(MAX_RECENT_LENGTH-bits.size) + bits
   end
 
+  def recent_succ_rate
+    recent_succ_count.to_f/CALC_WEIGHT_LENGTH
+  end
+
   def calc_weight
-    recent_fail_rate = 1 - recent_succ_count.to_f/CALC_WEIGHT_LENGTH
+    recent_fail_rate = 1 - recent_succ_rate
     rank = Word.freq_rank(frequency).to_f
     freq_weight = [1 - rank/FREQ_RANK_WEIGHT_BASE, 0].max # map the rank 1~FREQ_RANK_WEIGHT_BASE to 1.0~0
     recent_fail_rate + freq_weight

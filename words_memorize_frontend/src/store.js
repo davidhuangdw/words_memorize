@@ -3,7 +3,12 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 import _ from "lodash";
-import { LOADING, LOADED, FAILED, MAX_RECENT_RECORD_LEN } from "./utils/constants";
+import {
+  LOADING,
+  LOADED,
+  FAILED,
+  MAX_RECENT_RECORD_LEN
+} from "./utils/constants";
 
 Vue.use(Vuex);
 
@@ -27,6 +32,12 @@ const getters = {
       recent_bits.length
     );
     return _.map(recent_bits.slice(0, len), ch => ch === "1");
+  },
+  getFilteredMemos: state => ({ filter_by, sort_by }) => {
+    let memos = Object.values(state.memos);
+    if (filter_by) memos = _.filter(memos, filter_by);
+    if (sort_by) memos = _.sortBy(memos, sort_by);
+    return memos;
   }
 };
 
@@ -56,6 +67,17 @@ const actions = {
         commit("UPDATE_STATUS", FAILED);
       }
     );
+  },
+  addMemoTest: ({ dispatch }, { word_id, succeed }) => {
+    return axios
+      .post("memos/add_test", {
+        word_id,
+        succeed,
+        include_word: true
+      })
+      .then(payload => {
+        dispatch("insertMemo", payload.data);
+      });
   },
   insertMemo: ({ commit }, memo) => {
     commit("INSERT_MEMO", memo);

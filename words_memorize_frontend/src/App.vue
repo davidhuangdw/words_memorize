@@ -1,12 +1,26 @@
 <template>
-  <div id="app">
-    <!--<div id="nav">-->
-      <!--<router-link to="/">Home</router-link> |-->
-      <!--<router-link to="/about">About</router-link>-->
-    <!--</div>-->
+  <v-app id="app">
+    <v-toolbar class="nav">
+      <v-toolbar-side-icon></v-toolbar-side-icon>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat @click="linkTo('/')"> Dictionary </v-btn>
+        <v-btn flat @click="linkTo('memo')"> Memorize </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
     <router-view />
-  </div>
+  </v-app>
 </template>
+
+<script>
+export default {
+  name: "app",
+  methods: {
+    linkTo(path) {
+      this.$router.push(path);
+    }
+  }
+};
+</script>
 
 <style lang="scss">
 #app {
