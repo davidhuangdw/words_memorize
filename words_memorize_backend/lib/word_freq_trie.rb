@@ -1,8 +1,9 @@
 require 'set'
 require_relative '../lib/priority_queue'
+require_relative '../config/../config/initializers/setup'
 
 class WordFreqTrie
-  TOP_K = 50
+  TOP_K_SIZE = SETUP[:top_k_size].to_i
 
   class Node
     attr_accessor :nxt, :complete, :frequency
@@ -18,7 +19,7 @@ class WordFreqTrie
       if max >= context[:least_freq]
         if complete and frequency >= context[:least_freq]
           result_que.push([path.join, frequency])
-          if result_que.size > TOP_K
+          if result_que.size > TOP_K_SIZE
             result_que.pop
             context[:least_freq] = result_que.peek[1]   # wrap :least_freq inside 'context' to update it
           end
@@ -76,7 +77,8 @@ class WordFreqTrie
     # p node_path_pairs.values.map(&:join).sort
 
     que = PriorityQueue.new{|word_freq_pair| word_freq_pair[1]}
-    node_path_pairs.each{|node, path| node.search_most_frequents(result_que: que, path: path) }
+    context = {least_freq: node_path_pairs.map{|node, _| node.top_k_least}.max}
+    node_path_pairs.each{|node, path| node.search_most_frequents(result_que: que, path: path, context: context) }
     que.to_a.sort_by{|word_freq_pair| Word.freq_rank(word_freq_pair[1])}.to_h
   end
 end

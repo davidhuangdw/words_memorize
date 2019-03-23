@@ -53,14 +53,14 @@
                 class="mx-0"
                 color="white--text red darken-1"
                 :disabled="requesting || confirmed"
-                @click="addTest(true)"
-                >Correct</v-btn
+                @click="addTest(false)"
+                >Wrong</v-btn
               >
               <v-btn
                 color="white--text green darken-1"
                 :disabled="requesting || confirmed"
-                @click="addTest(false)"
-                >Wrong</v-btn
+                @click="addTest(true)"
+                >Correct</v-btn
               >
             </div>
 
@@ -139,7 +139,7 @@ export default {
       this.selected = "";
     },
     select(word_id) {
-      this.reset(this.always_need_answer);
+      this.reset(false);
       this.selected = word_id;
     },
     random_pick() {

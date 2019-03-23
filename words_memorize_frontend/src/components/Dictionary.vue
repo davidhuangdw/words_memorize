@@ -4,7 +4,8 @@
       <v-flex sm6>
         <v-text-field
           class="input-prefix"
-          label="Search"
+          color="default"
+          label="Search (strike 'enter' for exact match)"
           v-model="prefix"
           @input="autoRecommend"
           @keydown.enter="selectInput"

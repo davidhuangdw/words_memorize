@@ -30,12 +30,12 @@ class WordFreqTrieByDB < WordFreqTrie
     end
 
     node.max = most[0]
-    node.top_k_least = most[TOP_K - 1] || 0
+    node.top_k_least = most[TOP_K_SIZE - 1] || 0
     most
   end
 
   # merge desc_sorted a and b, and in-place a
-  def merge(a, b, tmp, limit: TOP_K)
+  def merge(a, b, tmp, limit: TOP_K_SIZE)
     a.each_with_index{|v, i| tmp[i] = v}
     i = j = k = 0
     while k < limit && (i < tmp.size || j < b.size)

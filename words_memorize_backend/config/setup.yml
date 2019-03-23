@@ -1,0 +1,15 @@
+defaults: &defaults
+  top_k_size: 50    # recommend top_k_size words
+  memo:
+    max_recent_length: 20   # store how many recent tests
+    cal_weight_length: 5    # how many recent tests to be calculated into memo weight
+    freq_rank_weight_base: 25000 # freq_rank_weight_base~1.0 are mapped to weight 0~1.0, rank 1.0 means most frequent and is mapped to 1.0 weight
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

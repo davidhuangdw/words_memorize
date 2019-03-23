@@ -2,9 +2,9 @@ class Memo
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  MAX_RECENT_LENGTH = 20
-  FREQ_RANK_WEIGHT_BASE = 25_000
-  CALC_WEIGHT_LENGTH = 5         # for calc_weight
+  MAX_RECENT_LENGTH = SETUP[:memo][:max_recent_length].to_i
+  FREQ_RANK_WEIGHT_BASE = SETUP[:memo][:freq_rank_weight_base].to_i
+  CALC_WEIGHT_LENGTH = SETUP[:memo][:cal_weight_length].to_i
 
   field :user_id, type: String
   field :frequency, type: Float, default: 0
