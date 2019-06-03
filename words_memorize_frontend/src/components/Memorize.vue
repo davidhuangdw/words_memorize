@@ -21,11 +21,11 @@
       <v-flex sm3 class="memo-list">
         <v-list>
           <v-list-tile
-            v-for="memo in filteredMemos"
+            v-for="(memo, i) in filteredMemos"
             :key="memo.word_id"
-            @click="select(memo.word_id)"
+            @click="selectIndex(i)"
           >
-            <v-list-tile-content>{{ memo.word_id }}</v-list-tile-content>
+            <v-list-tile-content v-bind:class="selectedIndex == i ? 'selectedItem' : ''">{{ memo.word_id }}</v-list-tile-content>
           </v-list-tile>
         </v-list>
       </v-flex>
@@ -94,7 +94,8 @@ export default {
   },
   data: () => ({
     requesting: false,
-    selected: "",
+    selectedIndex: -1,
+    // selected: "",
     recent_succ_rate_cap: INIT_SUCC_RATE,
     always_need_answer: false,
     need_answer: true,
@@ -104,6 +105,10 @@ export default {
   computed: {
     ...mapState(["memos"]),
     ...mapGetters(["getFilteredMemos"]),
+    selected(){
+      let i = this.selectedIndex;
+      return 0 <= i && i < this.filteredMemos.length ? this.filteredMemos[i].word_id : ""
+    },
     selectedMemo() {
       return this.memos[this.selected];
     },
@@ -132,35 +137,58 @@ export default {
   },
   methods: {
     ...mapActions(["addMemoTest"]),
+    adjustSelectIndex(offset){
+      let i = this.selectedIndex + offset;
+      if(0 <= i && i < this.filteredMemos.length){
+        this.selectIndex(i);
+      }
+    },
     reset(need_answer) {
       this.need_answer = need_answer;
       this.answered = false;
       this.confirmed = false;
-      this.selected = "";
+      this.selectedIndex = -1;
+      // this.selected = "";
     },
-    select(word_id) {
+    selectIndex(i) {
       this.reset(false);
-      this.selected = word_id;
+      this.selectedIndex = i;
     },
     random_pick() {
       // pick a memo with the probability proportional to its weight among filteredMemos
       if (this.acculatedWeights.length < 1) return;
       const i = random_pick_acc_arr(this.acculatedWeights);
-      this.reset(true);
-      this.selected = this.filteredMemos[i].word_id;
+      this.selectIndex(i);
+      // this.selected = this.filteredMemos[i].word_id;
     },
     addTest(succeed) {
       this.requesting = true;
       const done = () => {
         this.requesting = false;
-        this.confirmed = true;
+        this.confirmed = this.answered = false;
       };
       this.addMemoTest({ word_id: this.selected, succeed }).then(done, done);
     },
     answer(known) {
       this.answered = true;
       if (!known) this.addTest(false);
-    }
+    },
+    onKeyDown(e){
+      switch (e.code) {
+        case "ArrowUp":
+          this.adjustSelectIndex(-1);
+          break;
+        case "ArrowDown":
+          this.adjustSelectIndex(1);
+          break;
+      }
+    },
+  },
+  created(){
+    document.addEventListener('keydown', this.onKeyDown)
+  },
+  destroyed() {
+    document.removeEventListener('keydown', this.onKeyDown)
   }
 };
 </script>
@@ -169,5 +197,8 @@ export default {
 .memo-list {
   height: 600px;
   overflow: scroll;
+}
+.selectedItem{
+  background-color: aliceblue;
 }
 </style>

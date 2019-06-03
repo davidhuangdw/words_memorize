@@ -34,7 +34,7 @@ class Word
                             translation: translation,
                             bnc: bnc.to_f,
                             frq: frq.to_f,
-                            score: calc_frequency(bnc, frq))
+                            frequency: calc_frequency(bnc, frq))
       end
     end
 
